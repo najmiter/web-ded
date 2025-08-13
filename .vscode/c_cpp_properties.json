@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "name": "Bradha",
+      "includePath": ["${workspaceFolder}/include/raylib-cpp", "/opt/homebrew/Cellar/raylib/5.5/include"],
+      "defines": [],
+      "compilerPath": "/usr/bin/clang++",
+      "cStandard": "c23",
+      "cppStandard": "c++23",
+      "intelliSenseMode": "clang-x64"
+    }
+  ],
+  "version": 4
+}
