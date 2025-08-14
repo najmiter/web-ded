@@ -28,7 +28,7 @@ public:
     /**
      * Move constructor.
      */
-    Texture(Texture&& other)  noexcept {
+    Texture(Texture&& other) noexcept {
         set(other);
 
         other.id = 0;

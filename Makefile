@@ -1,14 +1,13 @@
 CXX = g++
 CXXFLAGS = -std=c++23 -Wall -Wextra \
     -I/opt/homebrew/Cellar/raylib/5.5/include \
-    -I/opt/homebrew/include \
     -I./include/raylib-cpp
 
 LDFLAGS = -L/opt/homebrew/Cellar/raylib/5.5/lib -lraylib \
     -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
 
 SRC_DIR = src
-SRC = src/main.cpp $(wildcard $(SRC_DIR)/*.cpp)
+SRC = $(wildcard $(SRC_DIR)/*.cpp)
 OBJ = $(SRC:.cpp=.o)
 TARGET = main
 
@@ -33,7 +32,7 @@ WEB_FLAGS = -std=c++23 -Wall -Wextra \
     -s WASM=1 \
     --preload-file assets
 
-SRC = src/main.cpp
+WEB_SRC = $(wildcard $(SRC_DIR)/*.cpp)
 
 web:
-	$(WEB_CC) $(SRC) $(WEB_FLAGS) -o web/index.html && cp -r assets web/assets
+	$(WEB_CC) $(WEB_SRC) $(WEB_FLAGS) -o web/index.html && cp -r assets web/assets

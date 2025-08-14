@@ -5,6 +5,7 @@
 #define RAYLIB_CPP_INCLUDE_FUNCTIONS_HPP_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "./raylib.hpp"
@@ -194,8 +195,8 @@ namespace raylib {
 /**
  * Load an image.
  */
-[[maybe_unused]] RLCPPAPI inline ::Image LoadImage(const std::string& fileName) {
-    return ::LoadImage(fileName.c_str());
+[[maybe_unused]] RLCPPAPI inline ::Image LoadImage(std::string_view fileName) {
+    return ::LoadImage(fileName.data());
 }
 
 /**

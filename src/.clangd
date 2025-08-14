@@ -1,0 +1,8 @@
+CompileFlags:
+  Add:
+    - "-I../include/raylib-cpp"
+    - "-I/opt/homebrew/Cellar/raylib/5.5/include"
+    - "-std=c++23"
+
+Diagnostics:
+  Suppress: ["unused-includes"]
