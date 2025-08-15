@@ -8,13 +8,10 @@
 
 namespace WebDed {
 enum class Asset {
-    PLAYER = 0,
-    LASER,
-    TRASH_0,
-    TRASH_1,
-    TRASH_2,
-    TRASH_3,
+    PLAYER = 0, LASER,
+    TRASH_0,TRASH_1,TRASH_2,TRASH_3,
 };
+
 // tried string_view but the stupid garbage collectors have poisoned my soul!!
 const static inline std::unordered_map<Asset, const std::string> g_SpriteAssets {
     {Asset::PLAYER, Utils::joinPath("assets", "protagonist.png").string()},
@@ -26,7 +23,7 @@ const static inline std::unordered_map<Asset, const std::string> g_SpriteAssets 
 };
 
 
-constexpr Asset allAssets[] = {
+constexpr Asset g_AllAssets[] = {
     Asset::PLAYER,
     Asset::LASER,
     Asset::TRASH_0,
@@ -35,7 +32,7 @@ constexpr Asset allAssets[] = {
     Asset::TRASH_3,
 };
 
-constexpr Asset trashes[] = {
+constexpr Asset g_Trashes[] = {
     Asset::TRASH_0,
     Asset::TRASH_1,
     Asset::TRASH_2,

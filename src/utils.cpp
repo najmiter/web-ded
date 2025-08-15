@@ -3,7 +3,7 @@
 #include <random>
 #include <string>
 #include <string_view>
-#include <iostream>
+#include <print>
 
 namespace fs = std::filesystem;
 
@@ -15,7 +15,7 @@ requires ((std::convertible_to<Strings, fs::path> || std::convertible_to<Strings
 auto joinPath(const Strings&... str) -> fs::path {
     fs::path result;
     ((result /= fs::path(str)), ...);
-    // std::cout << "\n\n\nresult: " << result.c_str() << "\n\n\n";
+    // std::println("\n\n\nresult: {}\n\n\n", result.c_str());
     return result;
 }
 

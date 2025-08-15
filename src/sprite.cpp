@@ -1,10 +1,17 @@
+#include <algorithm>
 #include <cstdint>
+#include <print>
 #include <string_view>
 
 #include "game.hpp"
+#include "raylib.h"
 #include "sprite.hpp"
 
 namespace WebDed {
+Sprite::Sprite(rl::Image&& texture) {
+    m_Texture = std::move(texture);
+}
+
 Sprite::Sprite(rl::Image texture, rl::Vector2 pos, float speed, rl::Vector2 dir)
     : m_Speed(speed), m_Direction(dir),  m_Position(pos), m_Texture(texture)  {
 }
@@ -25,7 +32,8 @@ auto Sprite::update(float dt) noexcept -> void {
 }
 
 auto Sprite::checkShouldDie() noexcept -> bool {
-    m_ShouldDie = m_Position.GetY() + m_Size.GetY() < -300.0f || m_Position.GetY() > Game::getSize().GetY();
+    auto topOffset{-300.0f};
+    m_ShouldDie = m_Position.GetY() + m_Size.GetY() < topOffset || m_Position.GetY() > Game::getSize().GetY();
     return m_ShouldDie;
 }
 }
