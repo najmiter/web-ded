@@ -71,4 +71,8 @@ auto Player::setSpeed(float speed) noexcept -> void {
     m_Speed = speed;
 }
 
+auto Player::pg13Shit() noexcept -> void {
+
+}
+
 }

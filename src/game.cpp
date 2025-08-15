@@ -1,17 +1,22 @@
-#include "game.hpp"
-#include "constants.hpp"
-#include "player.hpp"
-#include "raylib.h"
-#include "sprite.hpp"
-#include "timer.hpp"
-
 #include <algorithm>
 #include <print>
 #include <random>
 #include <string_view>
 
+#include "game.hpp"
+#include "RayCollision.hpp"
+#include "Rectangle.hpp"
+#include "constants.hpp"
+#include "player.hpp"
+#include "raylib.h"
+#include "sprite.hpp"
+#include "timer.hpp"
+#include "trash.hpp"
+
 namespace WebDed {
-Game::Game() : m_Window(setupWindow()) {}
+Game::Game()
+    : m_Window(setupWindow()),
+      m_Player(Player(rl::LoadImage(g_SpriteAssets.at(Asset::PLAYER)))) { }
 
 auto Game::setupWindow() const -> rl::Window {
     rl::Window window(s_Size.GetX(), s_Size.GetY(), "Web Ded");
@@ -30,8 +35,6 @@ auto Game::setupWindow() const -> rl::Window {
 }
 
 auto Game::loadAssets() -> void {
-    m_Player = Player(rl::LoadImage(g_SpriteAssets.at(Asset::PLAYER)));
-
     m_Sprites.insert({
         Asset::LASER, rl::LoadImage(g_SpriteAssets.at(Asset::LASER)),
     });
@@ -51,13 +54,16 @@ auto Game::loadAssets() -> void {
 
 auto Game::handleTrash() noexcept -> void {
     auto erasables {
-        std::remove_if(m_Trash.begin(), m_Trash.end(), [&](Sprite &trash) {
-            trash.update(m_Window.GetFrameTime());
-            trash.draw();
+        std::remove_if(m_Trash.begin(), m_Trash.end(), [](Trash& trash) {
             return trash.checkShouldDie();
         })
     };
     m_Trash.erase(erasables, m_Trash.end());
+
+    std::for_each(m_Trash.begin(), m_Trash.end(), [&](Trash& trash) {
+        trash.update(m_Window.GetFrameTime());
+        trash.draw();
+    });
 }
 
 auto Game::handlePlayer() -> void {
@@ -82,6 +88,7 @@ auto Game::run() noexcept -> void {
 
         this->handleTrash();
         this->handlePlayer();
+        this->checkCollisions();
 
         timer.update();
 
@@ -92,13 +99,24 @@ auto Game::run() noexcept -> void {
 auto Game::spawnTrash() noexcept -> void {
     auto trashSizeX{100};
     std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> dist(0, (int)s_Size.GetX() - trashSizeX);
-    auto x = dist(gen);
+    auto gen{std::mt19937(rd())};
+    std::uniform_int_distribution<int> distX(0, (int)s_Size.GetX() - trashSizeX);
+    auto x = distX(gen);
+    std::uniform_real_distribution<float> distSpeed(80.f, 120.f);
+    auto speed = distSpeed(gen);
 
     auto randomTrash = Utils::pickRandom(g_Trashes);
-    m_Trash.emplace_back(Trash(m_Sprites.at(randomTrash), {(float)x, -200.f}, 100.f, {0.f, 1.f}));
+    m_Trash.emplace_back(Trash(m_Sprites.at(randomTrash), {(float)x, -200.f}, speed, {0.f, 1.f}));
     std::println("Spawned some trash: {}", m_Trash.size());
+}
+
+auto Game::checkCollisions() noexcept -> void {
+    auto erasables {
+        std::remove_if(m_Trash.begin(), m_Trash.end(), [&](Trash& trash) {
+            return trash.checkCollisionWithOther(&m_Player);
+        })
+    };
+    m_Trash.erase(erasables, m_Trash.end());
 }
 
 }  // namespace WebDed

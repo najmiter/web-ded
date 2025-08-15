@@ -22,7 +22,6 @@ const static inline std::unordered_map<Asset, const std::string> g_SpriteAssets 
     {Asset::TRASH_3, Utils::joinPath("assets", "trash", "3.png").string()},
 };
 
-
 constexpr Asset g_AllAssets[] = {
     Asset::PLAYER,
     Asset::LASER,
@@ -37,5 +36,12 @@ constexpr Asset g_Trashes[] = {
     Asset::TRASH_1,
     Asset::TRASH_2,
     Asset::TRASH_3,
+};
+
+enum class GameState {
+    MENU = 0,
+    PLAY,
+    GAME_OVER,
+    GAME_WON,
 };
 }

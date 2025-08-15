@@ -1,7 +1,6 @@
 #pragma once
 
-#include <utility>
-#include "Image.hpp"
+#include <vector>
 #include "sprite.hpp"
 
 namespace WebDed {
@@ -16,5 +15,9 @@ public:
     auto checkShouldDie() noexcept -> bool;
     auto draw(rl::Color tint = rl::Color::White()) const noexcept -> void;
     auto setSpeed(float) noexcept -> void;
+    auto pg13Shit() noexcept -> void;
+
+private:
+    std::vector<Sprite> m_Bullets{};
 };
 }

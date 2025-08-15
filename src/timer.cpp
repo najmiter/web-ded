@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "timer.hpp"
+#include <random>
 
 namespace WebDed {
 Timer::Timer(float duration, bool shouldRepeat, bool isActive, std::function<void()> onComplete)
@@ -14,6 +15,10 @@ auto Timer::deActivate() noexcept -> void {
     m_IsActive = false;
     m_StartedAt = 0.0f;
     if (m_ShouldRepeat) {
+        std::random_device rd;
+        auto gen{std::mt19937(rd())};
+        std::uniform_real_distribution<float> dist(0.2f, 1.f);
+        m_Duration = dist(gen);
         this->activate();
     }
 }
@@ -22,7 +27,9 @@ auto Timer::update() noexcept -> void {
     if (!m_IsActive) return;
 
     if (GetTime() - m_StartedAt >= m_Duration) {
-        if (m_OnComplete && m_StartedAt) m_OnComplete();
+        if (m_OnComplete && m_StartedAt) {
+            m_OnComplete();
+        }
         this->deActivate();
     }
 }
