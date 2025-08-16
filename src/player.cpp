@@ -1,13 +1,20 @@
 #include <print>
 
 #include "player.hpp"
+#include "Keyboard.hpp"
+#include "Texture.hpp"
 #include "game.hpp"
+#include "raylib.h"
+#include "sprite.hpp"
 
 namespace WebDed {
 Player::Player(rl::Image&& texture)
     : Sprite(std::move(texture)) {
         m_Position.x = Game::getSize().x / 2.f - (float)m_Texture.width / 2.f;
         m_Position.y = Game::getSize().y / 2.f - (float)m_Texture.height / 2.f;
+        rl::Image img = g_SpriteAssets.at(Asset::LASER);
+        img.Resize(10, 30);
+        s_BulletTexture = img;
     }
 
 auto Player::move(float dt) noexcept -> void {
@@ -26,9 +33,10 @@ auto Player::move(float dt) noexcept -> void {
     }
 }
 
-auto Player::draw(rl::Color tint) const noexcept -> void {
+auto Player::draw(float dt, rl::Color tint) noexcept -> void {
     if (!m_Texture.IsValid()) return;
 
+    m_Bullets.drawVisible(dt);
     m_Texture.Draw(m_Position.x, m_Position.y, tint);
 }
 
@@ -42,6 +50,9 @@ auto Player::update(float dt) noexcept -> void {
 
 auto Player::handleInput(float dt) noexcept -> void {
     // std::println("----> Input handled");
+    if (rl::Keyboard::IsKeyPressed(KeyboardKey::KEY_SPACE)) {
+        this->pg13Shit();
+    }
     auto isGoingRight {
         rl::Keyboard::IsKeyDown(KeyboardKey::KEY_RIGHT) ||
         rl::Keyboard::IsKeyDown(KeyboardKey::KEY_D)
@@ -72,7 +83,14 @@ auto Player::setSpeed(float speed) noexcept -> void {
 }
 
 auto Player::pg13Shit() noexcept -> void {
-
+    auto speed{500.f};
+    m_Bullets.add(
+        Sprite(s_BulletTexture, {m_Position.x + m_Size.x / 2 - (float)s_BulletTexture.width / 2, m_Position.y + m_Size.y / 2}, speed, {0.f, -1.f})
+    );
+    // std::println("Spawned bullet: {}", m_Bullets.getTextures().size());
 }
 
+auto Player::getBullets() noexcept -> std::vector<Sprite>& {
+    return m_Bullets.getTextures();
+}
 }

@@ -14,6 +14,7 @@ class Sprite {
 public:
     Sprite() = default;
     Sprite(rl::Image&& texture);
+    Sprite(rl::Image& texture, rl::Vector2 pos, float speed, rl::Vector2 dir);
     Sprite(rl::Image&& texture, rl::Vector2 pos, float speed, rl::Vector2 dir);
 
     auto move(float dt) noexcept -> void;

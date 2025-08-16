@@ -2,8 +2,10 @@
 
 #include <string_view>
 #include <unordered_map>
+#include <vector>
 
 #include "constants.hpp"
+#include "erasable-texture.hpp"
 #include "player.hpp"
 #include "sprite.hpp"
 #include "raylib-cpp.hpp"
@@ -21,7 +23,6 @@ public:
     auto loadAssets() -> void;
     auto run() noexcept -> void;
     auto spawnTrash() noexcept -> void;
-    auto handleTrash() noexcept -> void;
     auto handlePlayer() -> void;
     auto checkCollisions() noexcept -> void;
 
@@ -30,11 +31,11 @@ public:
 private:
     rl::Window m_Window{};
     std::unordered_map<Asset, rl::Texture2D> m_Sprites{};
-    std::vector<Trash> m_Trash{};
+    ErasableTexture<Trash> m_Trashes{};
     Player m_Player{};
 
     static inline rl::Vector2 s_Size{1280, 720};
-    static inline GameState m_GameState{GameState::MENU};
+    static inline GameState s_GameState{GameState::PLAY};
 };
 
 }

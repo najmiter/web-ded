@@ -11,7 +11,7 @@ namespace WebDed {
 namespace Utils {
 
 template <typename... Strings>
-requires ((std::convertible_to<Strings, fs::path> || std::convertible_to<Strings, std::string_view>) && ...)
+    requires ((std::convertible_to<Strings, fs::path> || std::convertible_to<Strings, std::string_view>) && ...)
 auto joinPath(const Strings&... str) -> fs::path {
     fs::path result;
     ((result /= fs::path(str)), ...);

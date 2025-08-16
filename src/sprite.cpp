@@ -9,10 +9,21 @@
 
 namespace WebDed {
 Sprite::Sprite(rl::Image&& texture)
-    : m_Texture(std::move(texture)) { }
+    : m_Texture(std::move(texture)) {
+        m_Size.x = m_Texture.width;
+        m_Size.y = m_Texture.height;
+    }
 
 Sprite::Sprite(rl::Image&& texture, rl::Vector2 pos, float speed, rl::Vector2 dir)
     : m_Speed(speed), m_Direction(dir), m_Position(pos), m_Texture(std::move(texture))  {
+        m_Size.x = m_Texture.width;
+        m_Size.y = m_Texture.height;
+}
+
+Sprite::Sprite(rl::Image& texture, rl::Vector2 pos, float speed, rl::Vector2 dir)
+    : m_Speed(speed), m_Direction(dir), m_Position(pos), m_Texture(texture)  {
+        m_Size.x = m_Texture.width;
+        m_Size.y = m_Texture.height;
 }
 
 auto Sprite::draw(rl::Color tint) const noexcept -> void {

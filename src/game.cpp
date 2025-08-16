@@ -1,9 +1,10 @@
+#include "game.hpp"
+
 #include <algorithm>
 #include <print>
 #include <random>
 #include <string_view>
 
-#include "game.hpp"
 #include "RayCollision.hpp"
 #include "Rectangle.hpp"
 #include "constants.hpp"
@@ -16,7 +17,7 @@
 namespace WebDed {
 Game::Game()
     : m_Window(setupWindow()),
-      m_Player(Player(rl::LoadImage(g_SpriteAssets.at(Asset::PLAYER)))) { }
+      m_Player(Player(rl::LoadImage(g_SpriteAssets.at(Asset::PLAYER)))) {}
 
 auto Game::setupWindow() const -> rl::Window {
     rl::Window window(s_Size.GetX(), s_Size.GetY(), "Web Ded");
@@ -36,39 +37,31 @@ auto Game::setupWindow() const -> rl::Window {
 
 auto Game::loadAssets() -> void {
     m_Sprites.insert({
-        Asset::LASER, rl::LoadImage(g_SpriteAssets.at(Asset::LASER)),
+        Asset::LASER,
+        rl::LoadImage(g_SpriteAssets.at(Asset::LASER)),
     });
     m_Sprites.insert({
-        Asset::TRASH_0, rl::LoadImage(g_SpriteAssets.at(Asset::TRASH_0)),
+        Asset::TRASH_0,
+        rl::LoadImage(g_SpriteAssets.at(Asset::TRASH_0)),
     });
     m_Sprites.insert({
-        Asset::TRASH_1, rl::LoadImage(g_SpriteAssets.at(Asset::TRASH_1)),
+        Asset::TRASH_1,
+        rl::LoadImage(g_SpriteAssets.at(Asset::TRASH_1)),
     });
     m_Sprites.insert({
-        Asset::TRASH_2, rl::LoadImage(g_SpriteAssets.at(Asset::TRASH_2)),
+        Asset::TRASH_2,
+        rl::LoadImage(g_SpriteAssets.at(Asset::TRASH_2)),
     });
     m_Sprites.insert({
-        Asset::TRASH_3, rl::LoadImage(g_SpriteAssets.at(Asset::TRASH_3)),
-    });
-}
-
-auto Game::handleTrash() noexcept -> void {
-    auto erasables {
-        std::remove_if(m_Trash.begin(), m_Trash.end(), [](Trash& trash) {
-            return trash.checkShouldDie();
-        })
-    };
-    m_Trash.erase(erasables, m_Trash.end());
-
-    std::for_each(m_Trash.begin(), m_Trash.end(), [&](Trash& trash) {
-        trash.update(m_Window.GetFrameTime());
-        trash.draw();
+        Asset::TRASH_3,
+        rl::LoadImage(g_SpriteAssets.at(Asset::TRASH_3)),
     });
 }
 
 auto Game::handlePlayer() -> void {
-    m_Player.handleInput(m_Window.GetFrameTime());
-    m_Player.draw();
+    auto dt{m_Window.GetFrameTime()};
+    m_Player.handleInput(dt);
+    m_Player.draw(dt);
 }
 
 auto Game::run() noexcept -> void {
@@ -78,7 +71,8 @@ auto Game::run() noexcept -> void {
     // bg (#181818)
     rl::Color background{24, 24, 24};
 
-    auto timer = Timer(2, true, true, [&] {
+    // spawn trash randomly
+    auto timer = Timer(1.f, true, true, [&] {
         this->spawnTrash();
     });
 
@@ -86,37 +80,63 @@ auto Game::run() noexcept -> void {
         m_Window.BeginDrawing();
         m_Window.ClearBackground(background);
 
-        this->handleTrash();
-        this->handlePlayer();
-        this->checkCollisions();
+        switch (s_GameState) {
+            case GameState::PLAY: {
+                auto dt = m_Window.GetFrameTime();
+                m_Trashes.drawVisible(dt);
+                this->handlePlayer();
+                this->checkCollisions();
+                break;
+            }
+            case GameState::GAME_OVER: {
+                std::println("<GAME OVER>");
+                break;
+            }
+            default: {};
+        }
 
         timer.update();
-
         m_Window.EndDrawing();
     }
 }
 
 auto Game::spawnTrash() noexcept -> void {
     auto trashSizeX{100};
+
     std::random_device rd;
     auto gen{std::mt19937(rd())};
-    std::uniform_int_distribution<int> distX(0, (int)s_Size.GetX() - trashSizeX);
-    auto x = distX(gen);
-    std::uniform_real_distribution<float> distSpeed(80.f, 120.f);
-    auto speed = distSpeed(gen);
 
-    auto randomTrash = Utils::pickRandom(g_Trashes);
-    m_Trash.emplace_back(Trash(m_Sprites.at(randomTrash), {(float)x, -200.f}, speed, {0.f, 1.f}));
-    std::println("Spawned some trash: {}", m_Trash.size());
+    std::uniform_int_distribution<int> distX(0, (int)s_Size.GetX() - trashSizeX);
+    std::uniform_real_distribution<float> distSpeed(80.f, 120.f);
+
+    auto x{distX(gen)};
+    auto speed{distSpeed(gen)};
+
+    auto randomTrash{Utils::pickRandom(g_Trashes)};
+    m_Trashes.add(Trash(m_Sprites.at(randomTrash), {(float)x, -200.f}, speed, {0.f, 1.f}));
+    // std::println("Spawned some trash: {}", m_Trashes.getTextures().size());
 }
 
 auto Game::checkCollisions() noexcept -> void {
-    auto erasables {
-        std::remove_if(m_Trash.begin(), m_Trash.end(), [&](Trash& trash) {
+    auto& trashes = m_Trashes.getTextures();
+    auto& bullets = m_Player.getBullets();
+
+    auto erasables{
+        std::remove_if(trashes.begin(), trashes.end(), [&](Trash& trash) {
+            return std::any_of(bullets.begin(), bullets.end(), [&](Sprite& bullet) {
+                return trash.checkCollisionWithOther(&bullet);
+            });
+            // return trash.checkCollisionWithOther(&m_Player);
+        })};
+    trashes.erase(erasables, trashes.end());
+
+    auto isGameOver{
+        std::any_of(trashes.begin(), trashes.end(), [&](Trash& trash) {
             return trash.checkCollisionWithOther(&m_Player);
-        })
-    };
-    m_Trash.erase(erasables, m_Trash.end());
+        })};
+    if (isGameOver) {
+        s_GameState = GameState::GAME_OVER;
+    }
 }
 
 }  // namespace WebDed
