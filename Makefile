@@ -20,7 +20,7 @@ $(TARGET): $(OBJ)
 clean:
 	rm -f $(OBJ) $(TARGET)
 
-# WEB
+# Web
 WEB_CC = emcc
 WEB_FLAGS = -std=c++23 -Wall -Wextra \
     -I./raylib/src \
