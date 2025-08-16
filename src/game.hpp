@@ -4,6 +4,9 @@
 #include <unordered_map>
 #include <vector>
 
+#include "AudioStream.hpp"
+#include "Music.hpp"
+#include "Sound.hpp"
 #include "constants.hpp"
 #include "erasable-texture.hpp"
 #include "player.hpp"
@@ -33,6 +36,7 @@ private:
     std::unordered_map<Asset, rl::Texture2D> m_Sprites{};
     ErasableTexture<Trash> m_Trashes{};
     Player m_Player{};
+    rl::Music m_PlayBg{};
 
     static inline rl::Vector2 s_Size{1280, 720};
     static inline GameState s_GameState{GameState::PLAY};

@@ -1,13 +1,16 @@
 #include <print>
 
 #include "player.hpp"
-#include "Keyboard.hpp"
-#include "Texture.hpp"
+#include "Sound.hpp"
 #include "game.hpp"
 #include "raylib.h"
 #include "sprite.hpp"
 
 namespace WebDed {
+Player::Player() {
+    // m_LaserSound.Load(Utils::joinPath("assets", "music", "laser-gun.wav").string());
+}
+
 Player::Player(rl::Image&& texture)
     : Sprite(std::move(texture)) {
         m_Position.x = Game::getSize().x / 2.f - (float)m_Texture.width / 2.f;
@@ -15,6 +18,7 @@ Player::Player(rl::Image&& texture)
         rl::Image img = g_SpriteAssets.at(Asset::LASER);
         img.Resize(10, 30);
         s_BulletTexture = img;
+        m_LaserSound.Load(Utils::joinPath("assets", "music", "laser-gun.wav").string());
     }
 
 auto Player::move(float dt) noexcept -> void {
@@ -87,10 +91,15 @@ auto Player::pg13Shit() noexcept -> void {
     m_Bullets.add(
         Sprite(s_BulletTexture, {m_Position.x + m_Size.x / 2 - (float)s_BulletTexture.width / 2, m_Position.y + m_Size.y / 2}, speed, {0.f, -1.f})
     );
+    m_LaserSound.Play();
     // std::println("Spawned bullet: {}", m_Bullets.getTextures().size());
 }
 
 auto Player::getBullets() noexcept -> std::vector<Sprite>& {
     return m_Bullets.getTextures();
+}
+
+auto Player::promoteBro() noexcept -> void {
+    m_Score++;
 }
 }

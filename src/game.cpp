@@ -5,8 +5,8 @@
 #include <random>
 #include <string_view>
 
-#include "RayCollision.hpp"
-#include "Rectangle.hpp"
+#include "AudioDevice.hpp"
+#include "Sound.hpp"
 #include "constants.hpp"
 #include "player.hpp"
 #include "raylib.h"
@@ -16,8 +16,11 @@
 
 namespace WebDed {
 Game::Game()
-    : m_Window(setupWindow()),
-      m_Player(Player(rl::LoadImage(g_SpriteAssets.at(Asset::PLAYER)))) {}
+    : m_Window(setupWindow()) {
+        rl::AudioDevice::Init();
+        m_Player = Player(rl::LoadImage(g_SpriteAssets.at(Asset::PLAYER))); // bcz player needs audio device
+        m_PlayBg.Load(Utils::joinPath("assets", "music", "play-bg.mp3").string());
+    }
 
 auto Game::setupWindow() const -> rl::Window {
     rl::Window window(s_Size.GetX(), s_Size.GetY(), "Web Ded");
@@ -59,7 +62,7 @@ auto Game::loadAssets() -> void {
 }
 
 auto Game::handlePlayer() -> void {
-    auto dt{m_Window.GetFrameTime()};
+    auto dt = m_Window.GetFrameTime();
     m_Player.handleInput(dt);
     m_Player.draw(dt);
 }
@@ -67,6 +70,10 @@ auto Game::handlePlayer() -> void {
 auto Game::run() noexcept -> void {
     // i know `this` is not necessary but it makes a little sense in a way
     this->loadAssets();
+
+    // for now just do this
+    m_PlayBg.Play();
+    m_PlayBg.SetVolume(0.3f);
 
     // bg (#181818)
     rl::Color background{24, 24, 24};
@@ -82,6 +89,7 @@ auto Game::run() noexcept -> void {
 
         switch (s_GameState) {
             case GameState::PLAY: {
+                m_PlayBg.Update();
                 auto dt = m_Window.GetFrameTime();
                 m_Trashes.drawVisible(dt);
                 this->handlePlayer();
@@ -90,6 +98,14 @@ auto Game::run() noexcept -> void {
             }
             case GameState::GAME_OVER: {
                 std::println("<GAME OVER>");
+                break;
+            }
+            case GameState::MENU: {
+                std::println("<RENDERING MENU>");
+                break;
+            }
+            case GameState::GAME_WON: {
+                std::println("<GAME WON>");
                 break;
             }
             default: {};
@@ -104,13 +120,13 @@ auto Game::spawnTrash() noexcept -> void {
     auto trashSizeX{100};
 
     std::random_device rd;
-    auto gen{std::mt19937(rd())};
+    auto gen = std::mt19937(rd());
 
     std::uniform_int_distribution<int> distX(0, (int)s_Size.GetX() - trashSizeX);
     std::uniform_real_distribution<float> distSpeed(80.f, 120.f);
 
-    auto x{distX(gen)};
-    auto speed{distSpeed(gen)};
+    auto x = distX(gen);
+    auto speed = distSpeed(gen);
 
     auto randomTrash{Utils::pickRandom(g_Trashes)};
     m_Trashes.add(Trash(m_Sprites.at(randomTrash), {(float)x, -200.f}, speed, {0.f, 1.f}));
@@ -123,9 +139,15 @@ auto Game::checkCollisions() noexcept -> void {
 
     auto erasables{
         std::remove_if(trashes.begin(), trashes.end(), [&](Trash& trash) {
-            return std::any_of(bullets.begin(), bullets.end(), [&](Sprite& bullet) {
+            auto dead = std::find_if(bullets.begin(), bullets.end(), [&](Sprite& bullet) {
                 return trash.checkCollisionWithOther(&bullet);
             });
+            if (dead != bullets.end()) {
+                m_Player.promoteBro(); // give a score
+                bullets.erase(dead);
+                return true;
+            }
+            return false;
             // return trash.checkCollisionWithOther(&m_Player);
         })};
     trashes.erase(erasables, trashes.end());
