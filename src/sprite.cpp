@@ -47,14 +47,17 @@ auto Sprite::checkShouldDie() noexcept -> bool {
     return m_ShouldDie;
 }
 
-auto Sprite::checkCollisionWithOther(Sprite const* other) const noexcept  -> bool {
+auto Sprite::checkCollisionWithOther(Sprite const* trash) const noexcept  -> bool {
+    // not in view yet
+    if (trash->m_Position.y + (float)trash->m_Texture.height < 0) return false;
+
     rl::Rectangle rectP {
         m_Position.x, m_Position.y,
         (float)m_Texture.width, (float)m_Texture.height
     };
     rl::Rectangle rectT {
-        other->m_Position.x, other->m_Position.y,
-        (float)other->m_Texture.width, (float)other->m_Texture.height
+        trash->m_Position.x, trash->m_Position.y,
+        (float)trash->m_Texture.width, (float)trash->m_Texture.height
     };
 
     return rectP.CheckCollision(rectT);

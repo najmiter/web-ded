@@ -26,9 +26,10 @@ public:
     auto spawnTrash() noexcept -> void;
     auto handlePlayer() -> void;
     auto checkCollisions() noexcept -> void;
-
     auto renderMenu() -> void;
     auto renderGameOver() -> void;
+    auto renderScore() -> void;
+
     auto constexpr static inline getSize() { return s_Size; }
 
 private:
@@ -36,6 +37,7 @@ private:
     std::unordered_map<Asset, rl::Texture2D> m_Sprites{};
     ErasableTexture<Trash> m_Trashes{};
     Player m_Player{};
+    Sprite m_RandomTrash{};
 
     Animation m_Explosion{};
     rl::Music m_PlayBg{};

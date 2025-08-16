@@ -100,7 +100,7 @@ auto Player::getBullets() noexcept -> std::vector<Sprite>& {
 }
 
 auto Player::promoteBro() noexcept -> void {
-    m_Score++;
+    m_Score += 5;
 }
 
 auto Player::getScore() const noexcept -> uint64_t {

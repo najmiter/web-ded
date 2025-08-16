@@ -6,6 +6,9 @@
 #include <random>
 #include <string_view>
 
+#include "Color.hpp"
+#include "Functions.hpp"
+#include "Texture.hpp"
 #include "button.hpp"
 #include "constants.hpp"
 #include "player.hpp"
@@ -16,7 +19,8 @@
 
 namespace WebDed {
 Game::Game()
-    : m_Window(setupWindow()) {
+    : m_Window(setupWindow()),
+    m_RandomTrash(Sprite(g_SpriteAssets.at(Utils::pickRandom(g_Trashes)), {Game::s_Size.x / 2 - 47.f, 500.f}, 0.f, {0.f, 0.f})) {
         rl::AudioDevice::Init();
         m_Player = Player(rl::LoadImage(g_SpriteAssets.at(Asset::PLAYER))); // bcz player needs audio device
         m_Explosion = Animation(rl::LoadImage(Utils::joinPath("assets", "thush.png").string()));
@@ -120,6 +124,7 @@ auto Game::run() noexcept -> void {
                 m_PlayBg.Update();
 
                 this->checkCollisions();
+                this->renderScore();
                 m_Trashes.drawVisible(dt);
                 this->handlePlayer();
                 break;
@@ -160,7 +165,7 @@ auto Game::spawnTrash() noexcept -> void {
     auto x = distX(gen);
     auto speed = distSpeed(gen);
 
-    auto randomTrash{Utils::pickRandom(g_Trashes)};
+    auto randomTrash = Utils::pickRandom(g_Trashes);
     m_Trashes.add(Trash(m_Sprites.at(randomTrash), {(float)x, -200.f}, speed, {0.f, 1.f}));
     // std::println("Spawned some trash: {}", m_Trashes.getTextures().size());
 }
@@ -237,6 +242,13 @@ auto Game::renderGameOver() -> void {
     rl::DrawText(std::format("Score: {}", m_Player.getScore()), xCenter - pSize.x / 2, 100.f, 20, rl::Color::RayWhite());
     playBtn.render();
     quitBtn.render();
+
+    rl::DrawText("Dam bro, you turned into of these", xCenter - 170.f, 400.f, 20.f, rl::Color::White());
+    m_RandomTrash.draw();
+}
+
+auto Game::renderScore() -> void {
+    rl::DrawText(std::format("Score: {}", m_Player.getScore()), 10, 10, 20, rl::Color::RayWhite());
 }
 
 }  // namespace WebDed
