@@ -7,6 +7,8 @@
 
 #include "AudioDevice.hpp"
 #include "Sound.hpp"
+#include "Vector2.hpp"
+#include "button.hpp"
 #include "constants.hpp"
 #include "player.hpp"
 #include "raylib.h"
@@ -84,6 +86,8 @@ auto Game::run() noexcept -> void {
     });
 
     while (!m_Window.ShouldClose()) {
+        if (s_GameState == GameState::QUIT) break;
+
         m_Window.BeginDrawing();
         m_Window.ClearBackground(background);
 
@@ -101,7 +105,7 @@ auto Game::run() noexcept -> void {
                 break;
             }
             case GameState::MENU: {
-                std::println("<RENDERING MENU>");
+                Game::renderMenu();
                 break;
             }
             case GameState::GAME_WON: {
@@ -117,6 +121,8 @@ auto Game::run() noexcept -> void {
 }
 
 auto Game::spawnTrash() noexcept -> void {
+    if (s_GameState != GameState::PLAY) return;
+
     auto trashSizeX{100};
 
     std::random_device rd;
@@ -148,7 +154,6 @@ auto Game::checkCollisions() noexcept -> void {
                 return true;
             }
             return false;
-            // return trash.checkCollisionWithOther(&m_Player);
         })};
     trashes.erase(erasables, trashes.end());
 
@@ -159,6 +164,26 @@ auto Game::checkCollisions() noexcept -> void {
     if (isGameOver) {
         s_GameState = GameState::GAME_OVER;
     }
+}
+
+auto Game::renderMenu() -> void {
+    auto xCenter = Game::s_Size.x / 2;
+    auto pSize = rl::Vector2{100, 50};
+    auto pOnClick = [] {
+        std::println("Play button clicked!");
+        s_GameState = GameState::PLAY;
+    };
+    auto playBtn = Button("Play", rl::Color{40,40,40}, {xCenter - pSize.x / 2, 100.f}, pSize, pOnClick, {30.f, 15.f});
+
+    auto qSize = rl::Vector2{100, 50};
+    auto qOnClick = [] {
+        std::println("Quit button clicked!");
+        s_GameState = GameState::QUIT;
+    };
+    auto quitBtn = Button("Quit", rl::Color{40,40,40}, {xCenter - qSize.x / 2, pSize.y + 110.f}, qSize, qOnClick, {32.f, 15.f});
+
+    playBtn.render();
+    quitBtn.render();
 }
 
 }  // namespace WebDed

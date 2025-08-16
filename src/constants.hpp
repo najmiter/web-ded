@@ -43,5 +43,6 @@ enum class GameState {
     PLAY,
     GAME_OVER,
     GAME_WON,
+    QUIT
 };
 }

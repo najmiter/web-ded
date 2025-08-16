@@ -29,6 +29,7 @@ public:
     auto handlePlayer() -> void;
     auto checkCollisions() noexcept -> void;
 
+    auto static renderMenu() -> void;
     auto constexpr static inline getSize() { return s_Size; }
 
 private:
@@ -39,7 +40,7 @@ private:
     rl::Music m_PlayBg{};
 
     static inline rl::Vector2 s_Size{1280, 720};
-    static inline GameState s_GameState{GameState::PLAY};
+    static inline GameState s_GameState{GameState::MENU};
 };
 
 }
