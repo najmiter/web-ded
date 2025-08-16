@@ -1,2 +1,11 @@
 main
 *.o
+raylib/*
+# web directory is built by GitHub Actions
+web/
+.DS_Store
+# Node modules if added later
+node_modules/
+# Build artifacts
+*.wasm
+*.data

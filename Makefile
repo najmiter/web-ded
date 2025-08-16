@@ -26,13 +26,18 @@ WEB_FLAGS = -std=c++23 -Wall -Wextra \
     -I./raylib/src \
     -I./include/raylib-cpp \
     -DPLATFORM_WEB \
-    ./raylib/src/libraylib.web.a \
     -s USE_GLFW=3 \
     -s ASYNCIFY \
     -s WASM=1 \
-    --preload-file assets
+    -s TOTAL_MEMORY=67108864 \
+    --preload-file assets \
+    --shell-file ./raylib/src/minshell.html
 
 WEB_SRC = $(wildcard $(SRC_DIR)/*.cpp)
+RAYLIB_WEB_LIB = ./raylib/src/libraylib.web.a
 
-web:
-	$(WEB_CC) $(WEB_SRC) $(WEB_FLAGS) -o web/index.html && cp -r assets web/assets
+web: $(RAYLIB_WEB_LIB)
+	$(WEB_CC) $(WEB_SRC) $(WEB_FLAGS) $(RAYLIB_WEB_LIB) -o web/index.html && cp -r assets web/assets
+
+$(RAYLIB_WEB_LIB):
+	cd ./raylib/src && emmake make PLATFORM=PLATFORM_WEB

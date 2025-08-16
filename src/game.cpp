@@ -6,9 +6,6 @@
 #include <random>
 #include <string_view>
 
-#include "Color.hpp"
-#include "Functions.hpp"
-#include "Texture.hpp"
 #include "button.hpp"
 #include "constants.hpp"
 #include "player.hpp"
