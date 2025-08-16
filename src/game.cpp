@@ -6,8 +6,6 @@
 #include <random>
 #include <string_view>
 
-#include "Functions.hpp"
-#include "Vector2.hpp"
 #include "button.hpp"
 #include "constants.hpp"
 #include "player.hpp"

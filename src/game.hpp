@@ -4,7 +4,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Texture.hpp"
 #include "animation.hpp"
 #include "constants.hpp"
 #include "erasable-texture.hpp"

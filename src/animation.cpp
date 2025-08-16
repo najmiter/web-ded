@@ -8,7 +8,7 @@ auto Animation::animate(float dt) -> void {
     if (m_IsActive) {
         m_FrameTime += dt;
 
-        if (m_FrameTime >= 0.05f) {  // 0.05s per frame = 20 FPS
+        if (m_FrameTime >= 0.05f) {
             m_Frame++;
             m_FrameTime = 0.f;
         }
@@ -16,11 +16,10 @@ auto Animation::animate(float dt) -> void {
         if (m_Frame > 15) {  // done
             m_IsActive = false;
         } else {
-            // Convert m_Frame index to row/column in 4x4 grid
             int col = m_Frame % 4;
             int row = m_Frame / 4;
 
-            rl::Rectangle src = {col * 64.f, row * 64.f, 64, 64};
+            rl::Rectangle src = {col * 64.f, row * 64.f, 64.f, 64.f};
             m_Texture.Draw(src, m_Position);
         }
     }

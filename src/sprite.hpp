@@ -4,8 +4,6 @@
 #include <string_view>
 #include <vector>
 
-#include "Texture.hpp"
-#include "Vector2.hpp"
 #include "raylib-cpp.hpp"
 
 namespace WebDed {
