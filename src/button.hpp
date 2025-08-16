@@ -14,7 +14,6 @@ public:
     auto render() -> void;
 
 private:
-    bool m_IsHovered{};
     std::string_view m_Text{};
     rl::Color m_BgColor{};
     rl::Vector2 m_Position{};

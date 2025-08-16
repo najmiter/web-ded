@@ -16,6 +16,7 @@ class ErasableTexture : Sprite {
     auto drawVisible(float dt) noexcept -> void;
     auto add(T&& sprite) noexcept -> void;
     auto getTextures() noexcept -> std::vector<T>&;
+    auto clean() noexcept -> void;
 
    private:
     std::vector<T> m_Textures{};
@@ -43,5 +44,10 @@ auto ErasableTexture<T>::add(T&& sprite) noexcept -> void {
 ERASABLE_TEMPLATE
 auto ErasableTexture<T>::getTextures() noexcept -> std::vector<T>& {
     return m_Textures;
+}
+
+ERASABLE_TEMPLATE
+auto ErasableTexture<T>::clean() noexcept -> void {
+    m_Textures.clear();
 }
 }  // namespace WebDed

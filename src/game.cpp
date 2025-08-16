@@ -1,11 +1,13 @@
 #include "game.hpp"
 
 #include <algorithm>
+#include <format>
 #include <print>
 #include <random>
 #include <string_view>
 
 #include "AudioDevice.hpp"
+#include "Functions.hpp"
 #include "Sound.hpp"
 #include "Vector2.hpp"
 #include "button.hpp"
@@ -22,6 +24,8 @@ Game::Game()
         rl::AudioDevice::Init();
         m_Player = Player(rl::LoadImage(g_SpriteAssets.at(Asset::PLAYER))); // bcz player needs audio device
         m_PlayBg.Load(Utils::joinPath("assets", "music", "play-bg.mp3").string());
+        m_MenuBg.Load(Utils::joinPath("assets", "music", "menu-bg.mp3").string());
+        m_ExplosionSound.Load(Utils::joinPath("assets", "music", "explosion.wav").string());
     }
 
 auto Game::setupWindow() const -> rl::Window {
@@ -73,9 +77,12 @@ auto Game::run() noexcept -> void {
     // i know `this` is not necessary but it makes a little sense in a way
     this->loadAssets();
 
+    // fixed fps
+    m_Window.SetTargetFPS(60);
+
     // for now just do this
-    m_PlayBg.Play();
     m_PlayBg.SetVolume(0.3f);
+    m_MenuBg.SetVolume(0.3f);
 
     // bg (#181818)
     rl::Color background{24, 24, 24};
@@ -85,14 +92,31 @@ auto Game::run() noexcept -> void {
         this->spawnTrash();
     });
 
+    auto onMenu = [&] {
+        if (!m_MenuBg.IsPlaying()) {
+            m_MenuBg.Play();
+            m_PlayBg.Stop();
+        }
+        m_MenuBg.Update();
+    };
+
     while (!m_Window.ShouldClose()) {
         if (s_GameState == GameState::QUIT) break;
 
         m_Window.BeginDrawing();
         m_Window.ClearBackground(background);
 
+        if (m_Window.IsResized()) {
+            s_Size.x = m_Window.GetWidth();
+            s_Size.y = m_Window.GetHeight();
+        }
+
         switch (s_GameState) {
             case GameState::PLAY: {
+                if (!m_PlayBg.IsPlaying()) {
+                    m_PlayBg.Play();
+                    m_MenuBg.Stop();
+                }
                 m_PlayBg.Update();
                 auto dt = m_Window.GetFrameTime();
                 m_Trashes.drawVisible(dt);
@@ -101,11 +125,13 @@ auto Game::run() noexcept -> void {
                 break;
             }
             case GameState::GAME_OVER: {
-                std::println("<GAME OVER>");
+                onMenu();
+                this->renderGameOver();
                 break;
             }
             case GameState::MENU: {
-                Game::renderMenu();
+                onMenu();
+                this->renderMenu();
                 break;
             }
             case GameState::GAME_WON: {
@@ -148,9 +174,11 @@ auto Game::checkCollisions() noexcept -> void {
             auto dead = std::find_if(bullets.begin(), bullets.end(), [&](Sprite& bullet) {
                 return trash.checkCollisionWithOther(&bullet);
             });
+            // a hit
             if (dead != bullets.end()) {
                 m_Player.promoteBro(); // give a score
                 bullets.erase(dead);
+                m_ExplosionSound.Play();
                 return true;
             }
             return false;
@@ -168,20 +196,44 @@ auto Game::checkCollisions() noexcept -> void {
 
 auto Game::renderMenu() -> void {
     auto xCenter = Game::s_Size.x / 2;
-    auto pSize = rl::Vector2{100, 50};
+    auto textColor = rl::Color{40,40,40};
+    auto pSize = rl::Vector2{100.f, 50.f};
     auto pOnClick = [] {
-        std::println("Play button clicked!");
+        // std::println("Play button clicked!");
         s_GameState = GameState::PLAY;
     };
-    auto playBtn = Button("Play", rl::Color{40,40,40}, {xCenter - pSize.x / 2, 100.f}, pSize, pOnClick, {30.f, 15.f});
+    auto playBtn = Button("Play", textColor, {xCenter - pSize.x / 2, 150.f}, pSize, pOnClick, {30.f, 15.f});
 
-    auto qSize = rl::Vector2{100, 50};
+    auto qSize = rl::Vector2{100.f, 50.f};
     auto qOnClick = [] {
-        std::println("Quit button clicked!");
+        // std::println("Quit button clicked!");
         s_GameState = GameState::QUIT;
     };
-    auto quitBtn = Button("Quit", rl::Color{40,40,40}, {xCenter - qSize.x / 2, pSize.y + 110.f}, qSize, qOnClick, {32.f, 15.f});
+    auto quitBtn = Button("Quit", textColor, {xCenter - qSize.x / 2, pSize.y + 160.f}, qSize, qOnClick, {32.f, 15.f});
 
+    playBtn.render();
+    quitBtn.render();
+}
+
+auto Game::renderGameOver() -> void {
+    auto xCenter = Game::s_Size.x / 2;
+    auto pSize = rl::Vector2{100.f, 50.f};
+    auto pOnClick = [&] {
+        // std::println("Restart button clicked!");
+        s_GameState = GameState::PLAY;
+        m_Trashes.clean();
+        m_Player.reset();
+    };
+    auto playBtn = Button("Restart", rl::Color{40,40,40}, {xCenter - pSize.x / 2, 150.f}, pSize, pOnClick, {10.f, 15.f});
+
+    auto qSize = rl::Vector2{100.f, 50.f};
+    auto qOnClick = [] {
+        // std::println("Quit button clicked!");
+        s_GameState = GameState::QUIT;
+    };
+    auto quitBtn = Button("Quit", rl::Color{40,40,40}, {xCenter - qSize.x / 2, pSize.y + 160.f}, qSize, qOnClick, {32.f, 15.f});
+
+    rl::DrawText(std::format("Score: {}", m_Player.getScore()), xCenter - pSize.x / 2, 100.f, 20, rl::Color::RayWhite());
     playBtn.render();
     quitBtn.render();
 }

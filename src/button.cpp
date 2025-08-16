@@ -16,7 +16,7 @@ auto Button::render() -> void {
     if (isHovered) rl::Mouse::SetCursor(MOUSE_CURSOR_POINTING_HAND);
 
     m_BgColor.a = isHovered ? 150 : 255;
-    rect.Draw(m_BgColor);
+    rect.DrawRounded(0.5f, 10, m_BgColor);
     rl::DrawText(m_Text.data(), rect.x + m_Padding.x, rect.y + m_Padding.y, 20, rl::Color::RayWhite());
 }
 

@@ -102,4 +102,16 @@ auto Player::getBullets() noexcept -> std::vector<Sprite>& {
 auto Player::promoteBro() noexcept -> void {
     m_Score++;
 }
+
+auto Player::getScore() const noexcept -> uint64_t {
+    return m_Score;
+}
+
+auto Player::reset() noexcept -> void {
+    m_Score = 0ull;
+    m_Bullets.clean();
+    m_Position.x = Game::getSize().x / 2.f - (float)m_Texture.width / 2.f;
+    m_Position.y = Game::getSize().y / 2.f - (float)m_Texture.height / 2.f;
+}
+
 }

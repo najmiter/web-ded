@@ -29,7 +29,8 @@ public:
     auto handlePlayer() -> void;
     auto checkCollisions() noexcept -> void;
 
-    auto static renderMenu() -> void;
+    auto renderMenu() -> void;
+    auto renderGameOver() -> void;
     auto constexpr static inline getSize() { return s_Size; }
 
 private:
@@ -38,6 +39,8 @@ private:
     ErasableTexture<Trash> m_Trashes{};
     Player m_Player{};
     rl::Music m_PlayBg{};
+    rl::Music m_MenuBg{};
+    rl::Sound m_ExplosionSound{};
 
     static inline rl::Vector2 s_Size{1280, 720};
     static inline GameState s_GameState{GameState::MENU};

@@ -21,10 +21,13 @@ public:
     auto pg13Shit() noexcept -> void;
     auto getBullets() noexcept -> std::vector<Sprite>&;
     auto promoteBro() noexcept -> void;
+    auto getScore() const noexcept -> uint64_t;
+    auto reset() noexcept -> void;
 
 private:
     uint64_t m_Score{};
     rl::Sound m_LaserSound{};
+
     ErasableTexture<Sprite> m_Bullets{};
     static inline rl::Texture2D s_BulletTexture{};
 };
