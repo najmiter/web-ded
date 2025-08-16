@@ -13,7 +13,8 @@ auto Animation::animate(float dt) -> void {
             m_FrameTime = 0.f;
         }
 
-        if (m_Frame > 15) {  // done
+        // done
+        if (m_Frame > 15) {
             m_IsActive = false;
         } else {
             int col = m_Frame % 4;
