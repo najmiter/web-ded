@@ -241,6 +241,7 @@ auto Game::renderGameOver() -> void {
     quitBtn.render();
 
     rl::DrawText("Dam bro, you turned into of these", xCenter - 170.f, 400.f, 20.f, rl::Color::White());
+    m_RandomTrash.setPosition({Game::s_Size.x / 2 - 47.f, 500.f});
     m_RandomTrash.draw();
 }
 

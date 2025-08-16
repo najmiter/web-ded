@@ -20,6 +20,7 @@ public:
     auto checkShouldDie() noexcept -> bool;
     auto draw(rl::Color tint = rl::Color::White()) const noexcept -> void;
     auto checkCollisionWithOther(Sprite const* other) const noexcept -> bool;
+    auto setPosition(rl::Vector2 pos) noexcept -> void;
 
     constexpr inline const rl::Vector2& getPosition() { return m_Position; }
     constexpr inline const rl::Texture2D& getTexture() { return m_Texture; }

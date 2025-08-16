@@ -63,4 +63,8 @@ auto Sprite::checkCollisionWithOther(Sprite const* trash) const noexcept  -> boo
     return rectP.CheckCollision(rectT);
 }
 
+auto Sprite::setPosition(rl::Vector2 pos) noexcept -> void {
+    m_Position = pos;
+}
+
 }
