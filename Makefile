@@ -37,6 +37,7 @@ WEB_SRC = $(wildcard $(SRC_DIR)/*.cpp)
 RAYLIB_WEB_LIB = ./raylib/src/libraylib.web.a
 
 web: $(RAYLIB_WEB_LIB)
+	mkdir -p web
 	$(WEB_CC) $(WEB_SRC) $(WEB_FLAGS) $(RAYLIB_WEB_LIB) -o web/index.html && cp -r assets web/assets
 
 $(RAYLIB_WEB_LIB):
