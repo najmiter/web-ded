@@ -6,9 +6,7 @@
 #include <random>
 #include <string_view>
 
-#include "AudioDevice.hpp"
 #include "Functions.hpp"
-#include "Sound.hpp"
 #include "Vector2.hpp"
 #include "button.hpp"
 #include "constants.hpp"
@@ -23,6 +21,7 @@ Game::Game()
     : m_Window(setupWindow()) {
         rl::AudioDevice::Init();
         m_Player = Player(rl::LoadImage(g_SpriteAssets.at(Asset::PLAYER))); // bcz player needs audio device
+        m_Explosion = Animation(rl::LoadImage(Utils::joinPath("assets", "thush.png").string()));
         m_PlayBg.Load(Utils::joinPath("assets", "music", "play-bg.mp3").string());
         m_MenuBg.Load(Utils::joinPath("assets", "music", "menu-bg.mp3").string());
         m_ExplosionSound.Load(Utils::joinPath("assets", "music", "explosion.wav").string());
@@ -111,6 +110,9 @@ auto Game::run() noexcept -> void {
             s_Size.y = m_Window.GetHeight();
         }
 
+        auto dt = m_Window.GetFrameTime();
+        m_Explosion.animate(dt);
+
         switch (s_GameState) {
             case GameState::PLAY: {
                 if (!m_PlayBg.IsPlaying()) {
@@ -118,10 +120,10 @@ auto Game::run() noexcept -> void {
                     m_MenuBg.Stop();
                 }
                 m_PlayBg.Update();
-                auto dt = m_Window.GetFrameTime();
+
+                this->checkCollisions();
                 m_Trashes.drawVisible(dt);
                 this->handlePlayer();
-                this->checkCollisions();
                 break;
             }
             case GameState::GAME_OVER: {
@@ -179,6 +181,7 @@ auto Game::checkCollisions() noexcept -> void {
                 m_Player.promoteBro(); // give a score
                 bullets.erase(dead);
                 m_ExplosionSound.Play();
+                m_Explosion.reset(trash.getPosition());
                 return true;
             }
             return false;

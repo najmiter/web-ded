@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <vector>
+
 #include "constants.hpp"
 #include "erasable-texture.hpp"
 #include "sprite.hpp"
