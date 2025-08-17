@@ -7,10 +7,14 @@
     <title>Web Ded</title>
 
     <meta name="title" content="Web Ded - Space Cleanup Game" />
-    <meta name="description" content="Clean up space debris in this fast-paced action game built with C++ and raylib" />
+    <meta
+      name="description"
+      content="Clean up space debris in this fast-paced action game built with C++ and raylib"
+    />
     <meta
       name="keywords"
-      content="web ded, space game, shooter, cleanup, C++, raylib, webassembly, action game, arcade" />
+      content="web ded, space game, shooter, cleanup, C++, raylib, webassembly, action game, arcade"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="najmiter" />
 
@@ -19,20 +23,28 @@
     <meta property="og:title" content="Web Ded - Space Cleanup Game" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image" content="./assets/protagonist.png" />
-    <meta property="og:image:alt" content="Web Ded - Clean up space debris in this fast-paced action game" />
+    <meta
+      property="og:image:alt"
+      content="Web Ded - Clean up space debris in this fast-paced action game"
+    />
     <meta property="og:site_name" content="Web Ded" />
     <meta
       property="og:description"
-      content="Clean up space debris in this fast-paced action game built with C++ and raylib" />
+      content="Clean up space debris in this fast-paced action game built with C++ and raylib"
+    />
 
     <!-- Twitter metatags for sharing -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Web Dhouzz - Space Cleanup Game" />
     <meta name="twitter:image" content="./assets/protagonist.png" />
-    <meta name="twitter:image:alt" content="Web Dhouzz - Clean up space debris in this fast-paced action game" />
+    <meta
+      name="twitter:image:alt"
+      content="Web Dhouzz - Clean up space debris in this fast-paced action game"
+    />
     <meta
       name="twitter:description"
-      content="Clean up space debris in this fast-paced action game built with C++ and raylib" />
+      content="Clean up space debris in this fast-paced action game built with C++ and raylib"
+    />
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="./assets/protagonist.png" />
@@ -42,7 +54,7 @@
         margin: 0px;
         overflow: hidden;
         background-color: #0a0a0a;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -57,11 +69,16 @@
         color: #ffb74b;
         font-size: 1.2em;
         text-align: center;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
       }
     </style>
     <script
       type="text/javascript"
-      src="https://cdn.jsdelivr.net/gh/eligrey/FileSaver.js/dist/FileSaver.min.js"></script>
+      src="https://cdn.jsdelivr.net/gh/eligrey/FileSaver.js/dist/FileSaver.min.js"
+    ></script>
     <script type="text/javascript">
       function saveFileFromMEMFSToDisk(memoryFSname, localFSname) {
         // This can be called by C/C++ code
@@ -70,26 +87,33 @@
         var data = FS.readFile(memoryFSname);
         var blob;
 
-        if (isSafari) blob = new Blob([data.buffer], { type: 'application/octet-stream' });
-        else blob = new Blob([data.buffer], { type: 'application/octet-binary' });
+        if (isSafari)
+          blob = new Blob([data.buffer], { type: "application/octet-stream" });
+        else
+          blob = new Blob([data.buffer], { type: "application/octet-binary" });
 
         saveAs(blob, localFSname);
       }
     </script>
   </head>
   <body>
-    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+    <canvas
+      class="emscripten"
+      id="canvas"
+      oncontextmenu="event.preventDefault()"
+      tabindex="-1"
+    ></canvas>
     <div class="loading-text" id="loadingText">Loading...</div>
     <script>
       var Module = {
         canvas: (function () {
-          var canvas = document.getElementById('canvas');
+          var canvas = document.getElementById("canvas");
           return canvas;
         })(),
         onRuntimeInitialized: function () {
-          var loadingText = document.getElementById('loadingText');
+          var loadingText = document.getElementById("loadingText");
           if (loadingText) {
-            loadingText.style.display = 'none';
+            loadingText.style.display = "none";
           }
         },
       };
