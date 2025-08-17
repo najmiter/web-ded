@@ -1,8 +1,8 @@
 #include "game.hpp"
 
 #include <algorithm>
+#include <cstdint>
 #include <format>
-#include <print>
 #include <random>
 #include <string_view>
 
@@ -143,6 +143,10 @@ auto Game::run() noexcept -> void {
                 std::println("<GAME WON>");
                 break;
             }
+            case GameState::DIFFICULTY: {
+                this->renderDifficultyMenu();
+                break;
+            }
             default: {};
         }
 
@@ -167,7 +171,6 @@ auto Game::spawnTrash() noexcept -> void {
 
     auto randomTrash = Utils::pickRandom(g_Trashes);
     m_Trashes.add(Trash(m_Sprites.at(randomTrash), {(float)x, -200.f}, speed, {0.f, 1.f}));
-    // std::println("Spawned some trash: {}", m_Trashes.getTextures().size());
 }
 
 auto Game::checkCollisions() noexcept -> void {
@@ -181,8 +184,12 @@ auto Game::checkCollisions() noexcept -> void {
             });
             // a hit
             if (dead != bullets.end()) {
-                m_Player.promoteBro(); // give a score
                 bullets.erase(dead);
+                trash.takeHit();
+                if (trash.getHitsTaken() < (uint8_t)s_Difficulty) {
+                    return false;
+                }
+                m_Player.promoteBro(); // give a score
                 m_ExplosionSound.Play();
                 m_Explosion.reset(trash.getPosition());
                 return true;
@@ -203,19 +210,14 @@ auto Game::checkCollisions() noexcept -> void {
 auto Game::renderMenu() -> void {
     auto xCenter = Game::s_Size.x / 2;
     auto textColor = rl::Color{40,40,40};
-    auto pSize = rl::Vector2{100.f, 50.f};
-    auto pOnClick = [] {
-        // std::println("Play button clicked!");
-        s_GameState = GameState::PLAY;
+    auto bSize = rl::Vector2{100.f, 50.f};
+    auto getListener = [](GameState s) {
+        return [=] {
+            s_GameState = s;
+        };
     };
-    auto playBtn = Button("Play", textColor, {xCenter - pSize.x / 2, 150.f}, pSize, pOnClick, {30.f, 15.f});
-
-    auto qSize = rl::Vector2{100.f, 50.f};
-    auto qOnClick = [] {
-        // std::println("Quit button clicked!");
-        s_GameState = GameState::QUIT;
-    };
-    auto quitBtn = Button("Quit", textColor, {xCenter - qSize.x / 2, pSize.y + 160.f}, qSize, qOnClick, {32.f, 15.f});
+    auto playBtn = Button("Play", textColor, {xCenter - bSize.x / 2, 150.f}, bSize, getListener(GameState::DIFFICULTY), {30.f, 15.f});
+    auto quitBtn = Button("Quit", textColor, {xCenter - bSize.x / 2, bSize.y + 160.f}, bSize, getListener(GameState::QUIT), {32.f, 15.f});
 
     playBtn.render();
     quitBtn.render();
@@ -225,7 +227,6 @@ auto Game::renderGameOver() -> void {
     auto xCenter = Game::s_Size.x / 2;
     auto pSize = rl::Vector2{100.f, 50.f};
     auto pOnClick = [&] {
-        // std::println("Restart button clicked!");
         s_GameState = GameState::PLAY;
         m_Trashes.clean();
         m_Player.reset();
@@ -234,7 +235,6 @@ auto Game::renderGameOver() -> void {
 
     auto qSize = rl::Vector2{100.f, 50.f};
     auto qOnClick = [] {
-        // std::println("Quit button clicked!");
         s_GameState = GameState::QUIT;
     };
     auto quitBtn = Button("Quit", rl::Color{40,40,40}, {xCenter - qSize.x / 2, pSize.y + 160.f}, qSize, qOnClick, {32.f, 15.f});
@@ -252,4 +252,22 @@ auto Game::renderScore() -> void {
     rl::DrawText(std::format("Score: {}", m_Player.getScore()), 10, 10, 20, rl::Color::RayWhite());
 }
 
+auto Game::renderDifficultyMenu() -> void {
+    auto xCenter = Game::s_Size.x / 2;
+    auto bSize = rl::Vector2{100.f, 50.f};
+    auto getListener = [](Difficulty dif) {
+      return [=] {
+          s_Difficulty = dif;
+          s_GameState = GameState::PLAY;
+      };
+    };
+    auto lowBtn = Button(" Low ", rl::Color{40,40,40}, {xCenter - bSize.x / 2, 150.f}, bSize, getListener(Difficulty::LOW), {25.f, 15.f});
+    auto medBtn = Button("Medium", rl::Color{40,150,40}, {xCenter - bSize.x / 2, bSize.y + 160.f}, bSize, getListener(Difficulty::MEDIIUM), {17.f, 15.f});
+    auto highBtn = Button(" High ", rl::Color{150,40,40}, {xCenter - bSize.x / 2, bSize.y + 220.f}, bSize, getListener(Difficulty::HIGH), {22.f, 15.f});
+
+    rl::DrawText("Select difficulty", xCenter - bSize.x / 2 - 35.f, 100.f, 20, rl::Color::RayWhite());
+    lowBtn.render();
+    medBtn.render();
+    highBtn.render();
+}
 }  // namespace WebDed

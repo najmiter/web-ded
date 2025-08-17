@@ -38,11 +38,18 @@ constexpr Asset g_Trashes[] = {
     Asset::TRASH_3,
 };
 
+enum class Difficulty {
+    LOW = 1,
+    MEDIIUM,
+    HIGH,
+};
+
 enum class GameState {
     MENU = 0,
     PLAY,
     GAME_OVER,
     GAME_WON,
-    QUIT
+    QUIT,
+    DIFFICULTY,
 };
 }

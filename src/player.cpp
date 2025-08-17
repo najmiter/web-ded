@@ -92,7 +92,6 @@ auto Player::pg13Shit() noexcept -> void {
         Sprite(s_BulletTexture, {m_Position.x + m_Size.x / 2 - (float)s_BulletTexture.width / 2, m_Position.y + m_Size.y / 2}, speed, {0.f, -1.f})
     );
     m_LaserSound.Play();
-    // std::println("Spawned bullet: {}", m_Bullets.getTextures().size());
 }
 
 auto Player::getBullets() noexcept -> std::vector<Sprite>& {
@@ -100,7 +99,7 @@ auto Player::getBullets() noexcept -> std::vector<Sprite>& {
 }
 
 auto Player::promoteBro() noexcept -> void {
-    m_Score += 5;
+    m_Score += 5 * (uint64_t)Game::getDifficulty();
 }
 
 auto Player::getScore() const noexcept -> uint64_t {
@@ -113,5 +112,4 @@ auto Player::reset() noexcept -> void {
     m_Position.x = Game::getSize().x / 2.f - (float)m_Texture.width / 2.f;
     m_Position.y = Game::getSize().y / 2.f - (float)m_Texture.height / 2.f;
 }
-
 }

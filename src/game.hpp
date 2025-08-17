@@ -29,8 +29,10 @@ public:
     auto renderMenu() -> void;
     auto renderGameOver() -> void;
     auto renderScore() -> void;
+    auto renderDifficultyMenu() -> void;
 
     auto constexpr static inline getSize() -> const rl::Vector2& { return s_Size; }
+    auto constexpr static inline getDifficulty() -> Difficulty { return s_Difficulty; }
 
 private:
     rl::Window m_Window{};
@@ -44,7 +46,8 @@ private:
     rl::Music m_MenuBg{};
     rl::Sound m_ExplosionSound{};
 
-    static inline rl::Vector2 s_Size{(float)GetMonitorWidth(0), (float)GetMonitorHeight(0)};
     static inline GameState s_GameState{GameState::MENU};
+    static inline Difficulty s_Difficulty{Difficulty::MEDIIUM};
+    static inline rl::Vector2 s_Size{(float)GetMonitorWidth(0), (float)GetMonitorHeight(0)};
 };
 }
