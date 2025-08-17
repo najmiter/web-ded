@@ -31,7 +31,7 @@ WEB_FLAGS = -std=c++23 -Wall -Wextra \
     -s WASM=1 \
     -s TOTAL_MEMORY=67108864 \
     --preload-file assets \
-    --shell-file ./raylib/src/minshell.html
+    --shell-file ./template.html
 
 WEB_SRC = $(wildcard $(SRC_DIR)/*.cpp)
 RAYLIB_WEB_LIB = ./raylib/src/libraylib.web.a
