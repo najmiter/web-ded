@@ -54,8 +54,8 @@ private:
     rl::Music m_MenuBg{};
     rl::Sound m_ExplosionSound{};
 
-    static inline GameState s_GameState{GameState::GAME_WON};
-    static inline Difficulty s_Difficulty{Difficulty::MEDIIUM};
+    static inline GameState s_GameState{GameState::MENU};
+    static inline Difficulty s_Difficulty{Difficulty::LOW};
     static inline rl::Vector2 s_Size{(float)GetMonitorWidth(0), (float)GetMonitorHeight(0)};
 };
 }
