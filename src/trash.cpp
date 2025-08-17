@@ -18,4 +18,12 @@ auto Trash::checkShouldDie() noexcept -> bool {
 auto Trash::update(float dt) noexcept -> void {
     Sprite::move(dt);
 }
+
+auto Trash::getHitsTaken() const noexcept -> uint8_t {
+    return m_HitsTaken;
+}
+
+auto Trash::takeHit() noexcept -> void {
+    m_HitsTaken++;
+}
 }

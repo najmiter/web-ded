@@ -17,14 +17,17 @@
 namespace WebDed {
 Game::Game()
     : m_Window(setupWindow()),
-    m_RandomTrash(Sprite(g_SpriteAssets.at(Utils::pickRandom(g_Trashes)), {Game::s_Size.x / 2 - 47.f, 500.f}, 0.f, {0.f, 0.f})) {
-        rl::AudioDevice::Init();
-        m_Player = Player(rl::LoadImage(g_SpriteAssets.at(Asset::PLAYER))); // bcz player needs audio device
-        m_Explosion = Animation(rl::LoadImage(Utils::joinPath("assets", "thush.png").string()));
-        m_PlayBg.Load(Utils::joinPath("assets", "music", "play-bg.mp3").string());
-        m_MenuBg.Load(Utils::joinPath("assets", "music", "menu-bg.mp3").string());
-        m_ExplosionSound.Load(Utils::joinPath("assets", "music", "explosion.wav").string());
-    }
+    m_RandomTrash(Sprite(g_SpriteAssets.at(Utils::pickRandom(g_Trashes)), {Game::s_Size.x / 2 - 47.f, 500.f}, 0.f, {0.f, 0.f}))
+{
+    rl::AudioDevice::Init();
+    s_Size.x = (float)GetMonitorWidth(0);
+    s_Size.y = (float)GetMonitorHeight(0);
+    m_Player = Player(rl::LoadImage(g_SpriteAssets.at(Asset::PLAYER))); // bcz player needs audio device
+    m_Explosion = Animation(rl::LoadImage(Utils::joinPath("assets", "thush.png").string()));
+    m_PlayBg.Load(Utils::joinPath("assets", "music", "play-bg.mp3").string());
+    m_MenuBg.Load(Utils::joinPath("assets", "music", "menu-bg.mp3").string());
+    m_ExplosionSound.Load(Utils::joinPath("assets", "music", "explosion.wav").string());
+}
 
 auto Game::setupWindow() const -> rl::Window {
     rl::Window window(s_Size.GetX(), s_Size.GetY(), "Web Ded");

@@ -47,7 +47,7 @@ auto Sprite::checkShouldDie() noexcept -> bool {
     return m_ShouldDie;
 }
 
-auto Sprite::checkCollisionWithOther(Sprite const* trash) const noexcept  -> bool {
+auto Sprite::checkCollisionWithOther(Sprite const* trash) const noexcept -> bool {
     // not in view yet
     if (trash->m_Position.y + (float)trash->m_Texture.height < 0) return false;
 

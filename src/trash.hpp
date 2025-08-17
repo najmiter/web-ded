@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include "sprite.hpp"
 
 namespace WebDed {
@@ -12,5 +13,10 @@ public:
     auto move(float dt) noexcept -> void;
     auto update(float dt) noexcept -> void;
     auto checkShouldDie() noexcept -> bool;
+    auto getHitsTaken() const noexcept -> uint8_t;
+    auto takeHit() noexcept -> void;
+
+private:
+    uint8_t m_HitsTaken{};
 };
 }
