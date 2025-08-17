@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
@@ -30,9 +31,14 @@ public:
     auto renderGameOver() -> void;
     auto renderScore() -> void;
     auto renderDifficultyMenu() -> void;
+    auto renderGameWon() -> void;
 
     auto constexpr static inline getSize() -> const rl::Vector2& { return s_Size; }
     auto constexpr static inline getDifficulty() -> Difficulty { return s_Difficulty; }
+
+private:
+    // renders common ui for WIN and LOSE states
+    auto renderFinalState() -> void;
 
 private:
     rl::Window m_Window{};
@@ -41,12 +47,14 @@ private:
     Player m_Player{};
     Sprite m_RandomTrash{};
 
+    float m_GameStartedAt{};
+
     Animation m_Explosion{};
     rl::Music m_PlayBg{};
     rl::Music m_MenuBg{};
     rl::Sound m_ExplosionSound{};
 
-    static inline GameState s_GameState{GameState::MENU};
+    static inline GameState s_GameState{GameState::GAME_WON};
     static inline Difficulty s_Difficulty{Difficulty::MEDIIUM};
     static inline rl::Vector2 s_Size{(float)GetMonitorWidth(0), (float)GetMonitorHeight(0)};
 };

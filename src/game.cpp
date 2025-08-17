@@ -1,6 +1,7 @@
 #include "game.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <format>
 #include <random>
@@ -104,6 +105,11 @@ auto Game::run() noexcept -> void {
     while (!m_Window.ShouldClose()) {
         if (s_GameState == GameState::QUIT) break;
 
+        auto timeSinceStarted = m_Window.GetTime() - m_GameStartedAt;
+        if (timeSinceStarted >= 60.0 * 3.0 / (float)s_Difficulty) {
+            s_GameState = GameState::GAME_WON;
+        }
+
         m_Window.BeginDrawing();
         m_Window.ClearBackground(background);
 
@@ -124,9 +130,9 @@ auto Game::run() noexcept -> void {
                 m_PlayBg.Update();
 
                 this->checkCollisions();
-                this->renderScore();
                 m_Trashes.drawVisible(dt);
                 this->handlePlayer();
+                this->renderScore();
                 break;
             }
             case GameState::GAME_OVER: {
@@ -140,7 +146,7 @@ auto Game::run() noexcept -> void {
                 break;
             }
             case GameState::GAME_WON: {
-                std::println("<GAME WON>");
+                this->renderGameWon();
                 break;
             }
             case GameState::DIFFICULTY: {
@@ -223,10 +229,11 @@ auto Game::renderMenu() -> void {
     quitBtn.render();
 }
 
-auto Game::renderGameOver() -> void {
+auto Game::renderFinalState() -> void {
     auto xCenter = Game::s_Size.x / 2;
     auto pSize = rl::Vector2{100.f, 50.f};
     auto pOnClick = [&] {
+        m_GameStartedAt = m_Window.GetTime();
         s_GameState = GameState::PLAY;
         m_Trashes.clean();
         m_Player.reset();
@@ -242,24 +249,33 @@ auto Game::renderGameOver() -> void {
     rl::DrawText(std::format("Score: {}", m_Player.getScore()), xCenter - pSize.x / 2, 100.f, 20, rl::Color::RayWhite());
     playBtn.render();
     quitBtn.render();
+}
 
-    rl::DrawText("Dam bro, you turned into of these", xCenter - 170.f, 400.f, 20.f, rl::Color::White());
+auto Game::renderGameOver() -> void {
+    auto xCenter = Game::s_Size.x / 2;
+    this->renderFinalState();
+
+    rl::DrawText("Dam bro, you turned into of these", xCenter - 170.f, 400.f, 20.f, rl::Color::Red());
     m_RandomTrash.setPosition({Game::s_Size.x / 2 - 47.f, 500.f});
     m_RandomTrash.draw();
 }
 
 auto Game::renderScore() -> void {
+    auto timeRemaining = (60.0f * 3.0f / (float)s_Difficulty) - (m_Window.GetTime() - m_GameStartedAt);
     rl::DrawText(std::format("Score: {}", m_Player.getScore()), 10, 10, 20, rl::Color::RayWhite());
+    rl::DrawText(std::format("Time Remaining: {}s", (int)std::ceilf(timeRemaining)), 10, 40, 16, rl::Color::RayWhite());
 }
 
 auto Game::renderDifficultyMenu() -> void {
     auto xCenter = Game::s_Size.x / 2;
     auto bSize = rl::Vector2{100.f, 50.f};
-    auto getListener = [](Difficulty dif) {
-      return [=] {
-          s_Difficulty = dif;
-          s_GameState = GameState::PLAY;
-      };
+    auto getListener = [&](Difficulty dif) {
+        auto on = [&] { m_GameStartedAt = m_Window.GetTime(); };
+        return [=] {
+            on();
+            s_Difficulty = dif;
+            s_GameState = GameState::PLAY;
+        };
     };
     auto lowBtn = Button(" Low ", rl::Color{40,40,40}, {xCenter - bSize.x / 2, 150.f}, bSize, getListener(Difficulty::LOW), {25.f, 15.f});
     auto medBtn = Button("Medium", rl::Color{40,150,40}, {xCenter - bSize.x / 2, bSize.y + 160.f}, bSize, getListener(Difficulty::MEDIIUM), {17.f, 15.f});
@@ -269,5 +285,14 @@ auto Game::renderDifficultyMenu() -> void {
     lowBtn.render();
     medBtn.render();
     highBtn.render();
+}
+
+auto Game::renderGameWon() -> void {
+    auto xCenter = Game::s_Size.x / 2;
+    this->renderFinalState();
+
+    rl::DrawText("You cleaned the trash & WON THE GAME!", xCenter - 210.f, 400.f, 20.f, rl::Color::Green());
+    m_Player.setPosition({Game::s_Size.x / 2 - 47.f, 500.f});
+    m_Player.draw(0);
 }
 }  // namespace WebDed
