@@ -28,7 +28,7 @@ Game::Game()
     m_PlayBg.Load(Utils::joinPath("assets", "music", "play-bg.mp3").string());
     m_MenuBg.Load(Utils::joinPath("assets", "music", "menu-bg.mp3").string());
     m_ExplosionSound.Load(Utils::joinPath("assets", "music", "explosion.wav").string());
-    s_Font.Load(Utils::joinPath("assets", "fonts", "u-mono.ttf").string());
+    s_Font.Load(Utils::joinPath("assets", "fonts", "u-mono.ttf").string(), 80, nullptr, 0);
 
 }
 
