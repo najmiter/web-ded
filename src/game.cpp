@@ -108,7 +108,7 @@ auto Game::run() noexcept -> void {
         if (s_GameState == GameState::QUIT) break;
 
         auto timeSinceStarted = m_Window.GetTime() - m_GameStartedAt;
-        if (timeSinceStarted >= 60.0 * 3.0 / (float)s_Difficulty) {
+        if (s_GameState == GameState::PLAY && timeSinceStarted >= 60.0 * 3.0 / (float)s_Difficulty) {
             s_GameState = GameState::GAME_WON;
         }
 
@@ -240,7 +240,7 @@ auto Game::renderFinalState() -> void {
         m_Trashes.clean();
         m_Player.reset();
     };
-    auto playBtn = Button("Restart", rl::Color{40,40,40}, {xCenter - pSize.x / 2, 150.f}, pSize, pOnClick, {10.f, 15.f});
+    auto playBtn = Button("Restart", rl::Color{40,40,40}, {xCenter - pSize.x / 2, 150.f}, pSize, pOnClick, {13.f, 15.f});
 
     auto qSize = rl::Vector2{100.f, 50.f};
     auto qOnClick = [] {
@@ -293,7 +293,7 @@ auto Game::renderGameWon() -> void {
     auto xCenter = Game::s_Size.x / 2;
     this->renderFinalState();
 
-    rl::DrawTextEx(Game::getFont(), "You cleaned the trash & WON THE GAME!", {xCenter - 210.f, 400.f}, 20.f, 0.f, rl::Color::Green());
+    rl::DrawTextEx(Game::getFont(), "You cleaned the trash & WON THE GAME!", {xCenter - 200.f, 400.f}, 20.f, 0.f, rl::Color::Green());
     m_Player.setPosition({Game::s_Size.x / 2 - 47.f, 500.f});
     m_Player.draw(0);
 }
