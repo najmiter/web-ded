@@ -255,7 +255,7 @@ auto Game::renderGameOver() -> void {
     auto xCenter = Game::s_Size.x / 2;
     this->renderFinalState();
 
-    rl::DrawText("Dam bro, you turned into of these", xCenter - 170.f, 400.f, 20.f, rl::Color::Red());
+    rl::DrawText("Dam bro! Unfortunately, you turned into this", xCenter - 220.f, 400.f, 20.f, rl::Color::Red());
     m_RandomTrash.setPosition({Game::s_Size.x / 2 - 47.f, 500.f});
     m_RandomTrash.draw();
 }
