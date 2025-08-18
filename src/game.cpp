@@ -28,6 +28,8 @@ Game::Game()
     m_PlayBg.Load(Utils::joinPath("assets", "music", "play-bg.mp3").string());
     m_MenuBg.Load(Utils::joinPath("assets", "music", "menu-bg.mp3").string());
     m_ExplosionSound.Load(Utils::joinPath("assets", "music", "explosion.wav").string());
+    s_Font.Load(Utils::joinPath("assets", "fonts", "u-mono.ttf").string());
+
 }
 
 auto Game::setupWindow() const -> rl::Window {
@@ -246,7 +248,7 @@ auto Game::renderFinalState() -> void {
     };
     auto quitBtn = Button("Quit", rl::Color{40,40,40}, {xCenter - qSize.x / 2, pSize.y + 160.f}, qSize, qOnClick, {32.f, 15.f});
 
-    rl::DrawText(std::format("Score: {}", m_Player.getScore()), xCenter - pSize.x / 2, 100.f, 20, rl::Color::RayWhite());
+    rl::DrawTextEx(Game::getFont(), std::format("Score: {}", m_Player.getScore()), {xCenter - pSize.x / 2, 100.f}, 20.f, 0.f, rl::Color::RayWhite());
     playBtn.render();
     quitBtn.render();
 }
@@ -255,15 +257,15 @@ auto Game::renderGameOver() -> void {
     auto xCenter = Game::s_Size.x / 2;
     this->renderFinalState();
 
-    rl::DrawText("Dam bro! Unfortunately, you turned into this", xCenter - 220.f, 400.f, 20.f, rl::Color::Red());
+    rl::DrawTextEx(Game::getFont(), "Dam bro! Unfortunately, you turned into this", {xCenter - 220.f, 400.f}, 20.f, 0.f, rl::Color::Red());
     m_RandomTrash.setPosition({Game::s_Size.x / 2 - 47.f, 500.f});
     m_RandomTrash.draw();
 }
 
 auto Game::renderScore() -> void {
     auto timeRemaining = (60.0f * 3.0f / (float)s_Difficulty) - (m_Window.GetTime() - m_GameStartedAt);
-    rl::DrawText(std::format("Score: {}", m_Player.getScore()), 10, 10, 20, rl::Color::RayWhite());
-    rl::DrawText(std::format("Time Remaining: {}s", (int)std::ceilf(timeRemaining)), 10, 40, 16, rl::Color::RayWhite());
+    rl::DrawTextEx(Game::getFont(), std::format("Score: {}", m_Player.getScore()), {10.f, 10.f}, 20.f, 0.f, rl::Color::RayWhite());
+    rl::DrawTextEx(Game::getFont(), std::format("Time Remaining: {}s", (int)std::ceilf(timeRemaining)), {10.f, 40.f}, 16.f, 0.f, rl::Color::RayWhite());
 }
 
 auto Game::renderDifficultyMenu() -> void {
@@ -281,7 +283,7 @@ auto Game::renderDifficultyMenu() -> void {
     auto medBtn = Button("Medium", rl::Color{40,150,40}, {xCenter - bSize.x / 2, bSize.y + 160.f}, bSize, getListener(Difficulty::MEDIIUM), {17.f, 15.f});
     auto highBtn = Button(" High ", rl::Color{150,40,40}, {xCenter - bSize.x / 2, bSize.y + 220.f}, bSize, getListener(Difficulty::HIGH), {22.f, 15.f});
 
-    rl::DrawText("Select difficulty", xCenter - bSize.x / 2 - 35.f, 100.f, 20, rl::Color::RayWhite());
+    rl::DrawTextEx(Game::getFont(), "Select difficulty", {xCenter - bSize.x / 2 - 35.f, 100.f}, 20.f, 0.f, rl::Color::RayWhite());
     lowBtn.render();
     medBtn.render();
     highBtn.render();
@@ -291,7 +293,7 @@ auto Game::renderGameWon() -> void {
     auto xCenter = Game::s_Size.x / 2;
     this->renderFinalState();
 
-    rl::DrawText("You cleaned the trash & WON THE GAME!", xCenter - 210.f, 400.f, 20.f, rl::Color::Green());
+    rl::DrawTextEx(Game::getFont(), "You cleaned the trash & WON THE GAME!", {xCenter - 210.f, 400.f}, 20.f, 0.f, rl::Color::Green());
     m_Player.setPosition({Game::s_Size.x / 2 - 47.f, 500.f});
     m_Player.draw(0);
 }

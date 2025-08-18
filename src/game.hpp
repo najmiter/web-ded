@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Font.hpp"
 #include "animation.hpp"
 #include "constants.hpp"
 #include "erasable-texture.hpp"
@@ -35,6 +36,7 @@ public:
 
     auto constexpr static inline getSize() -> const rl::Vector2& { return s_Size; }
     auto constexpr static inline getDifficulty() -> Difficulty { return s_Difficulty; }
+    auto constexpr static inline getFont() -> rl::Font& { return s_Font; }
 
 private:
     // renders common ui for WIN and LOSE states
@@ -54,6 +56,7 @@ private:
     rl::Music m_MenuBg{};
     rl::Sound m_ExplosionSound{};
 
+    static inline rl::Font s_Font{};
     static inline GameState s_GameState{GameState::MENU};
     static inline Difficulty s_Difficulty{Difficulty::LOW};
     static inline rl::Vector2 s_Size{(float)GetMonitorWidth(0), (float)GetMonitorHeight(0)};

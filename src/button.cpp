@@ -1,4 +1,5 @@
 #include "button.hpp"
+#include "game.hpp"
 #include "raylib.h"
 
 namespace WebDed {
@@ -16,6 +17,6 @@ auto Button::render() -> void {
 
     m_BgColor.a = isHovered ? 150 : 255;
     rect.DrawRounded(0.5f, 10, m_BgColor);
-    rl::DrawText(m_Text.data(), rect.x + m_Padding.x, rect.y + m_Padding.y, 20, rl::Color::RayWhite());
+    rl::DrawTextEx(Game::getFont(), m_Text.data(), {rect.x + m_Padding.x, rect.y + m_Padding.y}, 20.f, 0.f, rl::Color::RayWhite());
 }
 }
