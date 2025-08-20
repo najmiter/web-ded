@@ -18,18 +18,21 @@
 namespace WebDed {
 Game::Game()
     : m_Window(setupWindow()),
-    m_RandomTrash(Sprite(g_SpriteAssets.at(Utils::pickRandom(g_Trashes)), {Game::s_Size.x / 2 - 47.f, 500.f}, 0.f, {0.f, 0.f}))
-{
+      m_RandomTrash(Sprite(g_SpriteAssets.at(Utils::pickRandom(g_Trashes)), {Game::s_Size.x / 2 - 47.f, 500.f}, 0.f, {0.f, 0.f})) {
     rl::AudioDevice::Init();
     s_Size.x = (float)GetMonitorWidth(0);
     s_Size.y = (float)GetMonitorHeight(0);
-    m_Player = Player(rl::LoadImage(g_SpriteAssets.at(Asset::PLAYER))); // bcz player needs audio device
+
+    m_Player = Player(rl::LoadImage(g_SpriteAssets.at(Asset::PLAYER)));  // bcz player needs audio device
     m_Explosion = Animation(rl::LoadImage(Utils::joinPath("assets", "thush.png").string()));
+
     m_PlayBg.Load(Utils::joinPath("assets", "music", "play-bg.mp3").string());
     m_MenuBg.Load(Utils::joinPath("assets", "music", "menu-bg.mp3").string());
+    m_WinnerSound.Load(Utils::joinPath("assets", "music", "winner.wav").string());
+    m_LoserSound.Load(Utils::joinPath("assets", "music", "loser.wav").string());
     m_ExplosionSound.Load(Utils::joinPath("assets", "music", "explosion.wav").string());
-    s_Font.Load(Utils::joinPath("assets", "fonts", "u-mono.ttf").string(), 80, nullptr, 0);
 
+    s_Font.Load(Utils::joinPath("assets", "fonts", "u-mono.ttf").string(), 80, nullptr, 0);
 }
 
 auto Game::setupWindow() const -> rl::Window {
@@ -109,6 +112,7 @@ auto Game::run() noexcept -> void {
 
         auto timeSinceStarted = m_Window.GetTime() - m_GameStartedAt;
         if (s_GameState == GameState::PLAY && timeSinceStarted >= 60.0 * 3.0 / (float)s_Difficulty) {
+            m_WinnerSound.Play();
             s_GameState = GameState::GAME_WON;
         }
 
@@ -148,6 +152,7 @@ auto Game::run() noexcept -> void {
                 break;
             }
             case GameState::GAME_WON: {
+                onMenu();
                 this->renderGameWon();
                 break;
             }
@@ -155,7 +160,7 @@ auto Game::run() noexcept -> void {
                 this->renderDifficultyMenu();
                 break;
             }
-            default: {};
+            default: { };
         }
 
         timer.update();
@@ -197,7 +202,7 @@ auto Game::checkCollisions() noexcept -> void {
                 if (trash.getHitsTaken() < (uint8_t)s_Difficulty) {
                     return false;
                 }
-                m_Player.promoteBro(); // give a score
+                m_Player.promoteBro();  // give a score
                 m_ExplosionSound.Play();
                 m_Explosion.reset(trash.getPosition());
                 return true;
@@ -211,13 +216,14 @@ auto Game::checkCollisions() noexcept -> void {
             return trash.checkCollisionWithOther(&m_Player);
         })};
     if (isGameOver) {
+        m_LoserSound.Play();
         s_GameState = GameState::GAME_OVER;
     }
 }
 
 auto Game::renderMenu() -> void {
     auto xCenter = Game::s_Size.x / 2;
-    auto textColor = rl::Color{40,40,40};
+    auto textColor = rl::Color{40, 40, 40};
     auto bSize = rl::Vector2{100.f, 50.f};
     auto getListener = [](GameState s) {
         return [=] {
@@ -240,13 +246,13 @@ auto Game::renderFinalState() -> void {
         m_Trashes.clean();
         m_Player.reset();
     };
-    auto playBtn = Button("Restart", rl::Color{40,40,40}, {xCenter - pSize.x / 2, 150.f}, pSize, pOnClick, {13.f, 15.f});
+    auto playBtn = Button("Restart", rl::Color{40, 40, 40}, {xCenter - pSize.x / 2, 150.f}, pSize, pOnClick, {15.f, 15.f});
 
     auto qSize = rl::Vector2{100.f, 50.f};
     auto qOnClick = [] {
         s_GameState = GameState::QUIT;
     };
-    auto quitBtn = Button("Quit", rl::Color{40,40,40}, {xCenter - qSize.x / 2, pSize.y + 160.f}, qSize, qOnClick, {32.f, 15.f});
+    auto quitBtn = Button("Quit", rl::Color{40, 40, 40}, {xCenter - qSize.x / 2, pSize.y + 160.f}, qSize, qOnClick, {32.f, 15.f});
 
     rl::DrawTextEx(Game::getFont(), std::format("Score: {}", m_Player.getScore()), {xCenter - pSize.x / 2, 100.f}, 20.f, 0.f, rl::Color::RayWhite());
     playBtn.render();
@@ -279,9 +285,9 @@ auto Game::renderDifficultyMenu() -> void {
             s_GameState = GameState::PLAY;
         };
     };
-    auto lowBtn = Button(" Low ", rl::Color{40,40,40}, {xCenter - bSize.x / 2, 150.f}, bSize, getListener(Difficulty::LOW), {25.f, 15.f});
-    auto medBtn = Button("Medium", rl::Color{40,150,40}, {xCenter - bSize.x / 2, bSize.y + 160.f}, bSize, getListener(Difficulty::MEDIIUM), {17.f, 15.f});
-    auto highBtn = Button(" High ", rl::Color{150,40,40}, {xCenter - bSize.x / 2, bSize.y + 220.f}, bSize, getListener(Difficulty::HIGH), {22.f, 15.f});
+    auto lowBtn = Button(" Low ", rl::Color{40, 40, 40}, {xCenter - bSize.x / 2, 150.f}, bSize, getListener(Difficulty::LOW), {25.f, 15.f});
+    auto medBtn = Button("Medium", rl::Color{40, 150, 40}, {xCenter - bSize.x / 2, bSize.y + 160.f}, bSize, getListener(Difficulty::MEDIIUM), {17.f, 15.f});
+    auto highBtn = Button(" High ", rl::Color{150, 40, 40}, {xCenter - bSize.x / 2, bSize.y + 220.f}, bSize, getListener(Difficulty::HIGH), {22.f, 15.f});
 
     rl::DrawTextEx(Game::getFont(), "Select difficulty", {xCenter - bSize.x / 2 - 35.f, 100.f}, 20.f, 0.f, rl::Color::RayWhite());
     lowBtn.render();

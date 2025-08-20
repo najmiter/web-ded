@@ -54,6 +54,8 @@ private:
     Animation m_Explosion{};
     rl::Music m_PlayBg{};
     rl::Music m_MenuBg{};
+    rl::Sound m_WinnerSound{};
+    rl::Sound m_LoserSound{};
     rl::Sound m_ExplosionSound{};
 
     static inline rl::Font s_Font{};
