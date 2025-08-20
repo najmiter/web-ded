@@ -32,7 +32,12 @@ Game::Game()
     m_LoserSound.Load(Utils::joinPath("assets", "music", "loser.wav").string());
     m_ExplosionSound.Load(Utils::joinPath("assets", "music", "explosion.wav").string());
 
-    s_Font.Load(Utils::joinPath("assets", "fonts", "u-mono.ttf").string(), 200, nullptr, 0);
+    s_Font.Load(Utils::joinPath("assets", "fonts", "u-mono.ttf").string(), 80, nullptr, 0);
+    SetTextureFilter(s_Font.texture, TEXTURE_FILTER_BILINEAR);
+
+#ifdef PLATFORM_WEB
+    GenTextureMipmaps(&s_Font.texture);
+#endif
 }
 
 auto Game::setupWindow() const -> rl::Window {
@@ -161,7 +166,8 @@ auto Game::run() noexcept -> void {
                 this->renderDifficultyMenu();
                 break;
             }
-            default: { };
+            default: {
+            };
         }
 
         timer.update();
