@@ -105,6 +105,7 @@ auto Game::run() noexcept -> void {
             m_PlayBg.Stop();
         }
         m_MenuBg.Update();
+        m_Trashes.clean();
     };
 
     while (!m_Window.ShouldClose()) {
